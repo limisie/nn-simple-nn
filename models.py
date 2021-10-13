@@ -53,7 +53,6 @@ class Neuron(ABC):
                 self.y[i] = self.predictions(xi)
                 error = self.error(d[i], self.y[i])
                 self.net_error += abs(error)
-                temp = self.w.copy()
                 if error != 0:
                     self.update_weights(xi, error)
 
@@ -105,8 +104,8 @@ class Adaline(PerceptronBipolar):
         while not self.stop_condition():
             self.y = self.predictions(x)
             errors = self.error(d, self.y)
-            self.calculate_net_error(errors)
             self.update_weights(x, errors)
+            self.calculate_net_error(errors)
 
             self.epochs += 1
 
