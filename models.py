@@ -28,7 +28,7 @@ class Neuron(ABC):
 
     def update_weights(self, x, error):
         self.w[0] += self.alpha * np.sum(error)
-        self.w[1:] += np.dot(error, x) * self.alpha
+        self.w[1:] += self.alpha * np.dot(error, x)
 
     def error(self, d, y):
         return d - y
@@ -41,13 +41,14 @@ class Neuron(ABC):
 
     def train(self, x, d):
         self.w = np.random.uniform(low=-self.w_range, high=self.w_range, size=(len(x[0]) + 1,))
+        self.y = np.empty(len(x))
         self.net_error = sys.maxsize
+
         self.epochs = 0
         self.time = time.time()
 
         while not self.stop_condition():
             self.net_error = 0
-            self.y = np.empty(len(x))
 
             for i, xi in enumerate(x):
                 self.y[i] = self.predictions(xi)
@@ -60,7 +61,10 @@ class Neuron(ABC):
         self.time = time.time() - self.time
 
     def evaluate(self, x):
-        self.y = self.predictions(x)
+        self.y = np.empty(len(x))
+
+        for i, xi in enumerate(x):
+            self.y[i] = self.predictions(xi)
 
 
 class PerceptronUnipolar(Neuron):
@@ -119,5 +123,5 @@ class Adaline(Neuron):
         self.y = np.array([self.threshold_function(y) for y in self.y])
 
     def evaluate(self, x):
-        super().evaluate(x)
+        self.y = self.predictions(x)
         self.y = np.array([self.threshold_function(y) for y in self.y])
