@@ -1,9 +1,9 @@
-from data import x_train, y_train, x_test, y_test
+from data import x_train, y_train, x_test, y_test, classes, input_data
 from models import Adaline, PerceptronUnipolar, PerceptronBipolar
 
 
 def convert_for_bipolar(arr):
-    arr[arr < 0.5] -= 1
+    arr[arr == 0] = -1
 
 
 def n_iteration_stats(n=1000, learning_rate=0.005, weight_range=0.01, allowed_error=0.5):
@@ -51,14 +51,21 @@ def parameter_stats(iterations=10, learning_rate=0.5, weight_range=0.5, allowed_
         print('---------------------------')
 
 
-def adaline_test(learning_rate=0.01, weight_rate=0.5, allowed_error=0.5):
+def adaline_test(learning_rate=0.01, weight_rate=0.5, allowed_error=2):
     convert_for_bipolar(y_train)
     convert_for_bipolar(y_test)
+    convert_for_bipolar(classes)
 
     model = Adaline(weight_rate, learning_rate, allowed_error)
     model.train(x_train, y_train)
     print(model.y)
     print(y_train)
+    model.evaluate(x_test)
+    print(model.y)
+    print(y_test)
+    model.evaluate(input_data)
+    print(model.y)
+    print(classes)
 
 
 if __name__ == '__main__':

@@ -27,7 +27,7 @@ class Neuron(ABC):
         return self.activation_function(self.weighted_sums(x))
 
     def update_weights(self, x, error):
-        self.w[0] = self.w[0] + self.alpha * np.sum(error)
+        self.w[0] += self.alpha * np.sum(error)
         self.w[1:] += np.dot(error, x) * self.alpha
 
     def error(self, d, y):
@@ -81,13 +81,19 @@ class PerceptronBipolar(Neuron):
             return -1
 
 
-class Adaline(PerceptronBipolar):
+class Adaline(Neuron):
     def __init__(self, w_range, alpha, allowed_error):
         super().__init__(w_range, alpha)
         self.allowed_error = allowed_error
 
-    def predictions(self, x):
-        return self.weighted_sums(x)
+    def activation_function(self, weighted_sum):
+        return weighted_sum
+
+    def threshold_function(self, y):
+        if y > 0:
+            return 1
+        else:
+            return -1
 
     def stop_condition(self):
         return self.net_error < self.allowed_error
@@ -110,8 +116,8 @@ class Adaline(PerceptronBipolar):
             self.epochs += 1
 
         self.time = time.time() - self.time
-        self.y = np.array([self.activation_function(y) for y in self.y])
+        self.y = np.array([self.threshold_function(y) for y in self.y])
 
     def evaluate(self, x):
         super().evaluate(x)
-        self.y = np.array([self.activation_function(y) for y in self.y])
+        self.y = np.array([self.threshold_function(y) for y in self.y])
